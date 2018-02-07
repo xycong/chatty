@@ -11,6 +11,8 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import ApolloClient, { createNetworkInterface } from "apollo-client";
 
+import AppWithNavigationState, { navigationReducer } from "./navigation";
+
 const networkInterface = createNetworkInterface({
   uri: "http://localhost:8080/graphql"
 });
@@ -20,7 +22,8 @@ const client = new ApolloClient({
 
 const store = createStore(
   combineReducers({
-    apollo: client.reducer()
+    apollo: client.reducer(),
+    nav: navigationReducer,
   }),
   {},
   composeWithDevTools(applyMiddleware(client.middleware()))
@@ -30,16 +33,7 @@ export default class App extends Component {
   render() {
     return (
       <ApolloProvider store={store} client={client}>
-        <View style={styles.container}>
-          <Text style={styles.welcome}>Welcome to React Native!</Text>
-          <Text style={styles.instructions}>
-            To get started, edit index.ios.js
-          </Text>
-          <Text style={styles.instructions}>
-            Press Cmd+R to reload,{"\n"}
-            Cmd+D or shake for dev menu
-          </Text>
-        </View>
+        <AppWithNavigationState />
       </ApolloProvider>
     );
   }

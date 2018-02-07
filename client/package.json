@@ -8,10 +8,15 @@
   },
   "dependencies": {
     "apollo-client": "^2.2.2",
-    "graphql-tag": "^2.6.1",
+    "graphql-tag": "^2.7.0",
+    "lodash": "^4.17.5",
+    "moment": "^2.20.1",
+    "prop-types": "^15.6.0",
+    "randomcolor": "^0.5.3",
     "react": "16.2.0",
     "react-apollo": "^2.0.4",
     "react-native": "0.53.0",
+    "react-navigation": "^1.0.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2"
