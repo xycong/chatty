@@ -4,14 +4,22 @@ import React, { Component } from "react";
 import {
   FlatList,
   StyleSheet,
+  ActivityIndicator,
   Text,
   TouchableHighlight,
   View
 } from "react-native";
+import { graphql } from 'react-apollo';
+import { USER_QUERY } from '../graphql/user.query';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     flex: 1
+  },
+  loading: {
+    justifyContent: 'center',
+    flex: 1,
   },
   groupContainer: {
     flex: 1,
@@ -42,6 +50,7 @@ class Group extends Component {
   }
   render() {
     const { id, name } = this.props.group;
+    
     return (
       <TouchableHighlight key={id} onPress={this.goToMessages}>
         <View style={styles.groupContainer}>
@@ -56,10 +65,17 @@ Group.propTypes = {
   group: PropTypes.shape({
     id: PropTypes.number,
     name: PropTypes.string
+    this.goToMessages = this.goToMessages.bind(this);
   })
-
-
 };
+
+goToMessage(group) {
+  const { navigate } = this.props.navigation;
+  navigate('Messages', { groupId: group.id, title: group.name });
+}
+
+renderItem = ({ item }) => <Group group={item} goToMessages= {this.goToMessages} />;
+
 class Groups extends Component {
   static navigationOptions = {
     title: "Chats"
@@ -67,6 +83,15 @@ class Groups extends Component {
   keyExtractor = item => item.id;
   renderItem = ({ item }) => <Group group={item} />;
   render() {
+    const { loading, user } = this.props;
+    // render loading placeholder while we fetch messages
+    if (loading) {
+      return (
+        <View style={[styles.loading, styles.container]}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
     // render list of groups for user
     return (
       <View style={styles.container}>
@@ -79,4 +104,29 @@ class Groups extends Component {
     );
   }
 }
-export default Groups;
+
+Groups.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }),
+  loading: PropTypes.bool,
+  user: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    email: PropTypes.string.isRequired,
+    groups: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+      }),
+    ),
+  }),
+};
+
+const userQuery = graphql(USER_QUERY, {
+  options: () => ({ variables: { id: 1 } }).
+  props: ({ data: { loading, user } }) => ({
+    loading, user,
+  }),
+});
+
+export default userQuery(Groups);
