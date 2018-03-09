@@ -3,11 +3,24 @@ export const Schema = [
   # declare custom scalars
   scalar Date
 
+  type MessageConnection {
+    edges: [MessageEdge]
+    pageInfo: PageInfo!
+  }
+  type MessageEdge {
+    cursor: String!
+    node: Message!
+  }
+  type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+  }
+
   type Group {
     id: Int! # unique id for the group
     name: String # name of the group
     users: [User]! # users in the group
-    messages: [Message] # messages sent to the group
+    messages(first: Int, after: String, last: Int, before: String): MessageConnection
   }
 
   type User {
@@ -33,8 +46,16 @@ export const Schema = [
     group(id: Int!): Group
   }
 
+  type Mutation {
+    # send a message to a group
+    createMessage(
+      text: String!, userId: Int!, groupId: Int!
+    ): Message
+  }
+
   schema {
-    query: Query
+    query: Query,
+    mutation: Mutation
   }
 ` 
 ];
